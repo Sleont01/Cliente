@@ -1,0 +1,198 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    </head>
+    <body layout:fragment="body">
+        <div class="container">
+
+            <form method="post" th:action="@{/usuario}" th:object="${usuarioBusqueda}">
+                <div class="row">
+
+                    <div class="col-12 col-md-3 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">@</span>
+                <input type="text" class="form-control" placeholder="Nombre" th:field="*{Nombre}">
+            </div>
+        </div>
+
+        <div class="col-12 col-md-3 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">@</span>
+                <input type="text" class="form-control" placeholder="Apellido Paterno" th:field="*{ApellidoPaterno}">
+            </div>
+        </div>
+                    <div class="col-12 col-md-3 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">@</span>
+                <input type="text" class="form-control" placeholder="Apellido Materno" th:field="*{ApellidoMaterno}">
+            </div>
+        </div>
+
+        <div class="col-12 col-md-2 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">@</span>
+                <input type="number" class="form-control" placeholder="Id Rol" th:field="*{Rol.IdRol}">
+            </div>
+        </div>
+                    
+                    <div class="col-12 col-md-1">
+                    <button type="submit" class="btn btn-primary input-group mb-3 col-3">Submit</button>
+                      </div>
+                </div>
+
+            </form>
+
+
+
+
+            <a th:href="@{usuario/action/{idUsuario}(idUsuario=0)}" class="btn btn-primary"><i class="bi bi-plus"></i></a>
+            <!--     <a href="/usuario/add" class="btn btn-primary"><i class="bi bi-plus"></i></a> -->
+
+            <table class="table table-hover">
+                <thead class="table-dark">
+                <th class="col-1"></th>
+                <th class="col-3">Imagen</th>
+                <th class="col-2">Nombre</th>
+                <th class="col-2">Contacto</th>
+                <th class="col-3">Dirección</th>
+                <th class="col-1">Status</th>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td><a th:href="@{/usuario/action/{idUsuario}(idUsuario = ${usuario.IdUsuario})}" class="btn btn-warning"><i class="bi bi-pencil-square"></i></a><a class="btn btn-danger" th:href="@{/usuario/delete/{IdUsuario}(IdUsuario = ${usuario.IdUsuario})}"><i class="bi bi-trash3-fill"></i></a></td>
+                        <td>
+                            <img id="imagenUsuario" style="max-height: 80px; max-width: 80px;" th:src="|${(usuario.Imagen != null) ? 'data:image/*;base64,' + usuario.Imagen : 'https://tlconnect.teamlease.com/Images/Profile/default.jpg'}|"/>
+                        </td>
+                        <td>
+                            <span th:text="${usuario.Nombre}"></span>
+                            <span th:if="${usuario.ApellidoPaterno != null and !usuario.ApellidoPaterno.isEmpty()}" 
+                                  th:text="' ' + ${usuario.ApellidoPaterno}"></span>
+                            <span th:if="${usuario.ApellidoMaterno != null and !usuario.ApellidoMaterno.isEmpty()}" 
+                                  th:text="' ' + ${usuario.ApellidoMaterno}"></span>
+                            <span th:if="${(usuario.ApellidoPaterno == null or usuario.ApellidoPaterno.isEmpty()) and 
+                                  (usuario.ApellidoMaterno == null or usuario.ApellidoMaterno.isEmpty())}" 
+                                  th:text="' (Sin apellidos)'" class="text-muted"></span>
+                        </td>
+                        <td>
+                            <div th:if="${usuario.Telefono != null and !usuario.Telefono.isEmpty()}" 
+                                 th:text="'Tel: ' + ${usuario.Telefono}"></div>
+                            <div th:if="${usuario.Celular != null and !usuario.Celular.isEmpty()}" 
+                                 th:text="'Cel: ' + ${usuario.Celular}"></div>
+                            <div th:if="${usuario.Email != null and !usuario.Email.isEmpty()}" 
+                                 th:text="'Email: ' + ${usuario.Email}"></div>
+                            <div th:if="${usuario.CURP != null and !usuario.CURP.isEmpty()}" 
+                                 th:text="'CURP: ' + ${usuario.CURP}"></div>
+                            <div th:if="${(usuario.Telefono == null or usuario.Telefono.isEmpty()) and 
+                                 (usuario.Celular == null or usuario.Celular.isEmpty()) and 
+                                 (usuario.Email == null or usuario.Email.isEmpty()) and 
+                                 (usuario.CURP == null or usuario.CURP.isEmpty())}" 
+                                 class="text-muted">Sin contacto</div>
+                        </td>
+                        <td>
+<!--                div con una condicional if que evalue que si IdUsuario es > 0 y IdDireccion == null se esconda esta parte-->
+                <div th:each="direccion : ${usuario.Direcciones}" th:text="|${direccion.Calle} ${direccion.NumeroExterior} ${direccion.NumeroInterior}
+                     ${direccion.Colonia.Nombre}, ${direccion.Colonia.CodigoPostal} ${direccion.Colonia.Municipio.Nombre} ${direccion.Colonia.Municipio.Estado.Nombre}
+                     ${direccion.Colonia.Municipio.Estado.Pais.Nombre}|"></div>
+                        </td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input switch-baja-logica" 
+                                       type="checkbox" 
+                                       role="switch" 
+                                       th:attr="data-id=${usuario.IdUsuario}"
+                                       th:checked="${usuario.Status}">
+                            </div>
+                        </td>
+
+            
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script>
+//             $('.switch-baja-logica').change(function() {
+//                let idUsuario = $(this).data("id");
+//                let element = this;
+//                
+//                let datos = {
+//        idUsuario: idUsuario,
+//        activo: false 
+//    };
+//
+//                element.disabled = true;
+//
+//           $.ajax({
+//                url: "http://localhost:8080/usuarioapi/status/" + idUsuario,
+//                type: "PUT",
+//                contentType: "application/json",
+//                data: JSON.stringify(datos),
+//                success: function(result) {
+//                    if (!result.correct) {  
+//                       
+//                        element.disabled = false;
+//                    }
+//                 
+//                },
+//                error: function() {
+//                    element.checked = !element.checked; 
+//                    element.disabled = false;
+//                }
+//            });
+//
+//                        });
+$(document).ready(function() {
+   
+    function bajaLogica(element) {
+        if (!element) return; 
+
+        let idUsuario = $(element).data("id");
+        if (idUsuario === undefined) return; 
+
+        console.log("IdUsuario:", idUsuario);
+
+        let datos = {
+            idUsuario: idUsuario,
+            activo: false
+        };
+
+        element.disabled = true;
+
+        $.ajax({
+            url: "http://localhost:8080/usuarioapi/status/" + idUsuario,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(datos),
+            success: function(result) {
+                if (!result.correct) {
+                
+                    element.checked = !element.checked;
+                }
+                element.disabled = false;
+            },
+            error: function(message) {
+                console.error("Error en la baja lógica:", message);
+                element.checked = !element.checked;
+                element.disabled = false;
+            }
+        });
+    }
+
+    // Event listener para todos los switches de baja lógica
+    $(document).on('change', '.switch-baja-logica', function() {
+        if (this) {
+            bajaLogica(this);
+        }
+    });
+});
+        </script>
+    </body>
+</html>
