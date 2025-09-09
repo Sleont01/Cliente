@@ -483,7 +483,7 @@ public class UsuarioController {
                     model.addAttribute("roles", responseRoles.getBody().object);
                 }
 
-                if (imagen != null) {
+                 if (imagen != null && imagen.getOriginalFilename() != null) {
                     String nombre = imagen.getOriginalFilename();
                     //archivo.jpg
                     //[archivo,jpg]
