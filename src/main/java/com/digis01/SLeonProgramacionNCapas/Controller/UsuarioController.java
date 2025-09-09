@@ -60,7 +60,7 @@ import org.springframework.web.client.RestTemplate;
 public class UsuarioController {
     
    
-    
+    //getall para visualizar todos los registros
     @GetMapping
     public String Index(Model model){
         
@@ -112,32 +112,7 @@ public class UsuarioController {
         return "UsuarioIndex";
     }
     
-    
-//    @GetMapping("usuarioDetail/{idUsuario}")
-//    public String UsuarioDetail(@PathVariable int idUsuario, Model model){
-//        
-//        Result result = usuarioDAOImplementation.DireccionesByIdUsuario(idUsuario);
-//        
-//        if (result.correct) {
-//            model.addAttribute("usuario", result.object);
-//        } else {
-//            return "Error";
-//        }
-//        
-//        return "UsuarioDetail";
-//    }
-//    
-//    @GetMapping("add")
-//    public String add(Model model){
-//        
-//        model.addAttribute("roles",rolDAOImplementation.GetAll().objects);
-//        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-//        model.addAttribute("Usuario", new Usuario());
-//        
-//        return "UsuarioForm";
-//    }
-//    */
-//    
+    //Para ir al agregar un nuevo usuario o ir para aditar el usuario
     @GetMapping("/action/{IdUsuario}")
     public String add(Model model, @PathVariable("IdUsuario") int IdUsuario){
         
@@ -197,7 +172,7 @@ public class UsuarioController {
         }
             return "UsuarioDetail";
         }}
-
+    // Para ir en formEditable
     //usuario/formEditable?IdUsuario=1&IdDireccion=2
     @GetMapping("/formEditable")
     public String formEditable(
@@ -206,7 +181,7 @@ public class UsuarioController {
                 Model model){
                 
         RestTemplate restTemplate = new RestTemplate();
-            
+          
         if (IdDireccion == null) {  // Editar Usuario
            
            // Result result = usuarioDAOImplementation.GetById(IdUsuario);
@@ -261,10 +236,7 @@ public class UsuarioController {
         usuario.getDirecciones().add(new Direccion(0)); 
        
             model.addAttribute("Usuario", usuario);
-            // model.addAttribute("roles", rolJPADAOImplementation.GetAll().objects);
-
-            //   model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-            //   model.addAttribute("paises", paisJPADAOImplementation.GetAll().objects);
+            
             ResponseEntity<Result> responseRoles = restTemplate.exchange(
                     "http://localhost:8080/rolapi",
                     HttpMethod.GET,
@@ -357,7 +329,7 @@ public class UsuarioController {
     }
     
     
-    
+    //eliminar una direccion
     @GetMapping("/eliminar")
     public String eliminar(@RequestParam("IdDireccion") int IdDireccion){
         
@@ -384,7 +356,7 @@ public class UsuarioController {
     
     }
     
-    
+    //Guardar los datos cargados
      @PostMapping("add")
     public String Add(
             @ModelAttribute("Usuario") Usuario usuario,
@@ -643,7 +615,7 @@ public class UsuarioController {
     }
     
 
-    
+    //Para borrar usuario
     @GetMapping("delete/{IdUsuario}")
     public String Delete(@PathVariable("IdUsuario") int IdUsuario){
         
