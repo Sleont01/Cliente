@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.text.SimpleDateFormat;
@@ -52,12 +53,14 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("usuario")
@@ -743,17 +746,25 @@ public String CargaMasiva(@RequestParam("archivo") MultipartFile file, Model mod
                 "http://localhost:8080/usuarioapi/cargamasiva",
                 HttpMethod.POST,
                 requestEntity,
-               Result.class
+               new ParameterizedTypeReference<Result>() {}
         );
-
+if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
         Result result = responseEntity.getBody();
-
-        model.addAttribute("result", result);
-        model.addAttribute("object", result.objects);
-        
-        
+            if(result != null) {
+                if(result.correct) {
+                    model.addAttribute("archivoCorrecto", true);
+                    model.addAttribute("object", result.object);
+                    model.addAttribute("listaErrores", new ArrayList<>()); // vacía, todo ok
+                } else {
+                    model.addAttribute("archivoCorrecto", false);
+                    model.addAttribute("listaErrores", result.errorMessage != null ? result.errorMessage : new ArrayList<>());
+                }
+            }
+}
 
     } catch (Exception ex) {
+        model.addAttribute("archivoCorrecto", false);
+        model.addAttribute("listaErrores", new ArrayList<>());
         model.addAttribute("result", "Error al cargar el archivo: " + ex.getMessage());
         System.out.println(ex.getLocalizedMessage());
     }
@@ -761,51 +772,48 @@ public String CargaMasiva(@RequestParam("archivo") MultipartFile file, Model mod
     return "CargaMasiva"; 
 }
 
-@GetMapping("/cargamasiva/procesar")
-public String cargarArchivoMasivo(HttpSession session) {
+    @GetMapping("cargamasiva/procesar")
+    public String CargaMasivaProcesar(HttpSession session, RedirectAttributes redirectAttributes) {
     try {
-        // Recuperar archivo 
-        MultipartFile file = (MultipartFile) session.getAttribute("file");
-        if (file == null || file.isEmpty()) {
-            return "No hay archivo para procesar";
-        }
+        String ruta = session.getAttribute("path").toString();
+        String nombreArchivo = Paths.get(ruta).getFileName().toString();
 
-        ByteArrayResource recurso = new ByteArrayResource(file.getBytes()) {
-            @Override
-            public String getFilename() {
-                return file.getOriginalFilename(); 
-            }
-        };
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("nombreArchivo", nombreArchivo);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", recurso);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity =
-                new HttpEntity<>(body, headers);
-        
         RestTemplate restTemplate = new RestTemplate();
-        
-        ResponseEntity<Result> responseEntity = restTemplate.exchange(
+        ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(
                 "http://localhost:8080/usuarioapi/cargamasiva/procesar",
                 HttpMethod.POST,
                 requestEntity,
-                Result.class
+                new ParameterizedTypeReference<Result<Usuario>>() {}
         );
 
-        Result result = responseEntity.getBody();
-        if (result != null && result.correct) {
-            return "Archivo procesado correctamente: " + file.getOriginalFilename();
+        if (responseEntity.getStatusCode() == HttpStatus.CREATED || responseEntity.getStatusCode() == HttpStatus.OK) {
+            Result<Usuario> result = responseEntity.getBody();
+            if(result != null && result.correct) {
+                redirectAttributes.addFlashAttribute("mensaje", "Archivo procesado correctamente.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", result != null ? result.errorMessage : "Error desconocido al procesar archivo.");
+            }
         } else {
-            return "Error al procesar archivo: " + (result != null ? result.errorMessage : "Desconocido");
+            redirectAttributes.addFlashAttribute("error", "Error al procesar el archivo en el servidor.");
         }
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "Error al procesar archivo: " + e.getMessage();
+    } catch (Exception ex) {
+        redirectAttributes.addFlashAttribute("error", "Excepción al procesar el archivo: " + ex.getMessage());
+        ex.printStackTrace();
     }
+
+    return "redirect:/usuario";
+    }
+
 }
 
 
@@ -1128,6 +1136,4 @@ public String cargarArchivoMasivo(HttpSession session) {
 
 
 
-
-}
 
