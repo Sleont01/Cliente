@@ -73,7 +73,7 @@ public class UsuarioController {
         
          RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange("http://localhost:8080/usuarioapi",
+        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange("http://localhost:8080/usuarioapi/repository",
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<List<Usuario>>>() {
@@ -119,14 +119,14 @@ public class UsuarioController {
         return "UsuarioIndex";
     }
     
-    //Para ir al agregar un nuevo usuario o ir para aditar el usuario
+    //Para ir al agregar un nuevo usuario o ir para editar el usuario
     @GetMapping("/action/{IdUsuario}")
     public String add(Model model, @PathVariable("IdUsuario") int IdUsuario){
         
         if(IdUsuario == 0){
             RestTemplate restTemplate = new RestTemplate();
              ResponseEntity<Result<List<Rol>>> responseRoles = restTemplate.exchange(
-        "http://localhost:8080/rolapi",
+        "http://localhost:8080/rolapi/repository",
         HttpMethod.GET,
         HttpEntity.EMPTY,
         new ParameterizedTypeReference<Result<List<Rol>>>() {}
@@ -141,7 +141,7 @@ public class UsuarioController {
             }
         }
            ResponseEntity<Result<List<Pais>>> responsePaises = restTemplate.exchange(
-                "http://localhost:8080/paisapi",
+                "http://localhost:8080/paisapi/repository",
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<List<Pais>>>() {}
@@ -161,7 +161,7 @@ public class UsuarioController {
         }else{
             RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange("http://localhost:8080/usuarioapi/"+ IdUsuario,
+        ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange("http://localhost:8080/usuarioapi/repository/"+ IdUsuario,
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<Usuario>>() {
@@ -193,7 +193,7 @@ public class UsuarioController {
            
            // Result result = usuarioDAOImplementation.GetById(IdUsuario);
             ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(
-                "http://localhost:8080/usuarioapi/" + IdUsuario,
+                "http://localhost:8080/usuarioapi/repository/" + IdUsuario,
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<Usuario>>() {}
@@ -209,7 +209,7 @@ public class UsuarioController {
                 model.addAttribute("Usuario", result.object);
 
                 ResponseEntity<Result<List<Rol>>> responseRoles = restTemplate.exchange(
-                        "http://localhost:8080/rolapi",
+                        "http://localhost:8080/rolapi/repository",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
                         new ParameterizedTypeReference<Result<List<Rol>>>() {}
@@ -224,7 +224,7 @@ public class UsuarioController {
                  model.addAttribute("roles", new ArrayList<Rol>());
             }
               ResponseEntity<Result> responsePaises = restTemplate.exchange(
-                    "http://localhost:8080/paisapi",
+                    "http://localhost:8080/paisapi/repository",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result>() {}
@@ -245,7 +245,7 @@ public class UsuarioController {
             model.addAttribute("Usuario", usuario);
             
             ResponseEntity<Result> responseRoles = restTemplate.exchange(
-                    "http://localhost:8080/rolapi",
+                    "http://localhost:8080/rolapi/repository",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result>() {
@@ -256,7 +256,7 @@ public class UsuarioController {
             }
 
             ResponseEntity<Result<List<Pais>>> responsePaises = restTemplate.exchange(
-                    "http://localhost:8080/paisapi",
+                    "http://localhost:8080/paisapi/repository",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<List<Pais>>>() {
@@ -300,7 +300,7 @@ public class UsuarioController {
 
         // Obtener países
         ResponseEntity<Result<List<Pais>>> responsePaises = restTemplate.exchange(
-            "http://localhost:8080/paisapi",
+            "http://localhost:8080/paisapi/repository",
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result<List<Pais>>>() {}
@@ -380,7 +380,7 @@ public class UsuarioController {
               //  model.addAttribute("roles", rolJPADAOImplementation.GetAll().objects);
               RestTemplate restTemplate = new RestTemplate();
               ResponseEntity<Result> responseRoles = restTemplate.exchange(
-                    "http://localhost:8080/rolapi",
+                    "http://localhost:8080/rolapi/repository",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result>() {
@@ -422,7 +422,7 @@ public class UsuarioController {
         HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario, headers);
 
         ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/usuarioapi",
+            "http://localhost:8080/usuarioapi/repository",
             HttpMethod.POST,
             requestEntity,
             new ParameterizedTypeReference<Result<Usuario>>() {}
@@ -452,7 +452,7 @@ public class UsuarioController {
 
                  RestTemplate restTemplate = new RestTemplate();
                 ResponseEntity<Result> responseRoles = restTemplate.exchange(
-                        "http://localhost:8080/rolapi",
+                        "http://localhost:8080/rolapi/repository",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
                         new ParameterizedTypeReference<Result>() {
@@ -479,7 +479,7 @@ public class UsuarioController {
                     }
                 }
                 
-                String url = "http://localhost:8080/usuarioapi/" + usuario.getIdUsuario();
+                String url = "http://localhost:8080/usuarioapi/repository/" + usuario.getIdUsuario();
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
@@ -571,7 +571,7 @@ public class UsuarioController {
             model.addAttribute("Usuario", usuario);
             RestTemplate restTemplate = new RestTemplate();
                 ResponseEntity<Result> responseRoles = restTemplate.exchange(
-                        "http://localhost:8080/rolapi",
+                        "http://localhost:8080/rolapi/repository",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
                         new ParameterizedTypeReference<Result>() {
@@ -596,7 +596,7 @@ public class UsuarioController {
         HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario, headers);
 
         ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/usuarioapi",
+            "http://localhost:8080/usuarioapi/repository",
             HttpMethod.POST,
             requestEntity,
             new ParameterizedTypeReference<Result<Usuario>>() {}
@@ -629,7 +629,7 @@ public class UsuarioController {
          RestTemplate restTemplate = new RestTemplate();
 
     ResponseEntity<Result> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/usuarioapi/" + IdUsuario, 
+            "http://localhost:8080/usuarioapi/repository/" + IdUsuario, 
             HttpMethod.DELETE,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result>() {}
@@ -752,9 +752,11 @@ if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
         Result result = responseEntity.getBody();
             if(result != null) {
                 if(result.correct) {
+                    
                     model.addAttribute("archivoCorrecto", true);
                     model.addAttribute("object", result.object);
                     model.addAttribute("listaErrores", new ArrayList<>()); // vacía, todo ok
+                  
                 } else {
                     model.addAttribute("archivoCorrecto", false);
                     model.addAttribute("listaErrores", result.errorMessage != null ? result.errorMessage : new ArrayList<>());
@@ -773,41 +775,26 @@ if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
 }
 
     @GetMapping("cargamasiva/procesar")
-    public String CargaMasivaProcesar(HttpSession session, RedirectAttributes redirectAttributes) {
+    public String CargaMasivaProcesar(HttpSession session) {
     try {
-        String ruta = session.getAttribute("path").toString();
-        String nombreArchivo = Paths.get(ruta).getFileName().toString();
-
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("nombreArchivo", nombreArchivo);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-
+        String sha1Hex = (String)session.getAttribute("sha1Hex");
+       
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(
-                "http://localhost:8080/usuarioapi/cargamasiva/procesar",
-                HttpMethod.POST,
-                requestEntity,
-                new ParameterizedTypeReference<Result<Usuario>>() {}
+        ResponseEntity<Result> responseEntity = restTemplate.exchange(
+                "http://localhost:8080/usuarioapi/cargamasiva/procesar/"+ sha1Hex,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                Result.class
         );
 
         if (responseEntity.getStatusCode() == HttpStatus.CREATED || responseEntity.getStatusCode() == HttpStatus.OK) {
-            Result<Usuario> result = responseEntity.getBody();
-            if(result != null && result.correct) {
-                redirectAttributes.addFlashAttribute("mensaje", "Archivo procesado correctamente.");
-            } else {
-                redirectAttributes.addFlashAttribute("error", result != null ? result.errorMessage : "Error desconocido al procesar archivo.");
-            }
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Error al procesar el archivo en el servidor.");
-        }
+            Result result = responseEntity.getBody();
+            
+            return "redirect:/usuario";}
+        
 
     } catch (Exception ex) {
-        redirectAttributes.addFlashAttribute("error", "Excepción al procesar el archivo: " + ex.getMessage());
+       
         ex.printStackTrace();
     }
 
