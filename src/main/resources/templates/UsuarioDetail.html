@@ -270,9 +270,9 @@
                                 <td th:text="${direccion.NumeroInterior}"></td>
                                 <td th:text="${direccion.Colonia.Nombre}"></td>
                                 <td th:text="${direccion.Colonia.CodigoPostal}"></td>
-                                <td th:text="${direccion.Colonia.Municipio.Nombre}"></td>
-                                <td th:text="${direccion.Colonia.Municipio.Estado.Nombre}"></td>
-                                <td th:text="${direccion.Colonia.Municipio.Estado.Pais.Nombre}"></td>
+                                <td th:text="${direccion.Colonia.municipio.Nombre}"></td>
+                                <td th:text="${direccion.Colonia.municipio.estado.Nombre}"></td>
+                                <td th:text="${direccion.Colonia.municipio.estado.pais.Nombre}"></td>
                                 <td>
                                    <div class="btn-group" role="group">
                                         <a class="btn btn-sm btn-warning" th:href="|@{/usuario/formEditable?IdUsuario=}${usuario.IdUsuario}&IdDireccion=${direccion.IdDireccion}|">

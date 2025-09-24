@@ -4,7 +4,7 @@ public class Colonia {
     private int IdColonia;
     private String Nombre;
     private String CodigoPostal;
-    public Municipio Municipio;
+    public Municipio municipio;
 
     public int getIdColonia() {
         return IdColonia;

@@ -3,7 +3,7 @@ package com.digis01.SLeonProgramacionNCapas.ML;
 public class Municipio {
     private int IdMunicipio;
     private String Nombre;
-    public Estado Estado;
+    public Estado estado;
 
     public int getIdMunicipio() {
         return IdMunicipio;

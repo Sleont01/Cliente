@@ -44,7 +44,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.core.ParameterizedTypeReference;
@@ -78,6 +80,7 @@ public class UsuarioController {
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<List<Usuario>>>() {
         });
+       
 
         if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200) ) {
             model.addAttribute("usuarioBusqueda", new Usuario());
@@ -85,6 +88,8 @@ public class UsuarioController {
             Result result = responseEntity.getBody();
                 
             if (result.correct) {
+                List<Usuario> usuarios = (List<Usuario>) responseEntity.getBody().object;
+                model.addAttribute("usuarios", usuarios);
                 model.addAttribute("usuarios", result.object);
             } else {
                 model.addAttribute("usuarios", null);
@@ -95,29 +100,50 @@ public class UsuarioController {
         return "UsuarioIndex";
     }
     
-     @PostMapping
-    public String Index(Model model, @ModelAttribute("usuarioBusqueda") Usuario usuarioBusqueda ) {
-        
-       // Result result = usuarioDAOImplementation.GetAll(usuarioBusqueda);
-       RestTemplate restTemplate = new RestTemplate();
+@PostMapping 
+public String Index(Model model, @ModelAttribute("usuarioBusqueda") Usuario usuarioBusqueda) {
 
+    RestTemplate restTemplate = new RestTemplate();
+
+    // Llamada al servicio REST para obtener todos los usuarios
     ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/usuarioapi",
+            "http://localhost:8080/usuarioapi/repository",
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result<List<Usuario>>>() {}
     );
-        
+
     if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
-        model.addAttribute("usuarioBusqueda", usuarioBusqueda); 
-        Result result = responseEntity.getBody();
-        model.addAttribute("usuarios", result.objects);
+
+        Result<List<Usuario>> result = responseEntity.getBody();
+        List<Usuario> listUsuarios = (List<Usuario>) result.object;
+
+
+        // Preparar filtros desde el objeto usuarioBusqueda
+        String filtroNombre = (usuarioBusqueda.getNombre() == null) ? "" : usuarioBusqueda.getNombre().trim();
+        String filtroApellidoPa = (usuarioBusqueda.getApellidoPaterno() == null) ? "" : usuarioBusqueda.getApellidoPaterno().trim();
+        String filtroApellidoMa = (usuarioBusqueda.getApellidoMaterno() == null) ? "" : usuarioBusqueda.getApellidoMaterno().trim();
+        String filtroRol = (usuarioBusqueda.getRol() == null || usuarioBusqueda.getRol().getIdRol() == 0) 
+                            ? "0" 
+                            : String.valueOf(usuarioBusqueda.getRol().getIdRol());
+
+        // Filtrar la lista de usuarios
+        List<Usuario> filtrados = listUsuarios.stream()
+                .filter(u -> filtroNombre.isEmpty() || u.getNombre().toLowerCase().contains(filtroNombre.toLowerCase()))
+                .filter(u -> filtroApellidoPa.isEmpty() || u.getApellidoPaterno().toLowerCase().contains(filtroApellidoPa.toLowerCase()))
+                .filter(u -> filtroApellidoMa.isEmpty() || u.getApellidoMaterno().toLowerCase().contains(filtroApellidoMa.toLowerCase()))
+                .filter(u -> filtroRol.equals("0") || String.valueOf(u.getRol().getIdRol()).equals(filtroRol))
+                .toList();
+
+        // Agregar al modelo
+        model.addAttribute("usuarioBusqueda", usuarioBusqueda);
+        model.addAttribute("usuarios", filtrados);
     }
-//        model.addAttribute("usuarioBusqueda", usuarioBusqueda);
-//        model.addAttribute("usuarios", result.objects);
-        
-        return "UsuarioIndex";
-    }
+
+    return "UsuarioIndex";
+}
+
+
     
     //Para ir al agregar un nuevo usuario o ir para editar el usuario
     @GetMapping("/action/{IdUsuario}")
@@ -279,7 +305,7 @@ public class UsuarioController {
         } else { // editar direccion
 
         ResponseEntity<Result<Direccion>> responseDireccion = restTemplate.exchange(
-        "http://localhost:8080/direccionapi/" + IdDireccion,
+        "http://localhost:8080/direccionapi/repository/" + IdDireccion,
         HttpMethod.GET,
         HttpEntity.EMPTY,
         new ParameterizedTypeReference<Result<Direccion>>() {}
@@ -314,7 +340,7 @@ public class UsuarioController {
 
         int IdPais = 0;
         ResponseEntity<Result<List<Estado>>> responseEstados = restTemplate.exchange(
-            "http://localhost:8080/estadoapi/" + IdPais,
+            "http://localhost:8080/estadoapi/repository/" + IdPais,
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result<List<Estado>>>() {}
@@ -343,7 +369,7 @@ public class UsuarioController {
         RestTemplate restTemplate = new RestTemplate();
 
     ResponseEntity<Result> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/direccionapi/" + IdDireccion, 
+            "http://localhost:8080/direccionapi/repository/" + IdDireccion, 
             HttpMethod.DELETE,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result>() {}
@@ -659,7 +685,7 @@ public class UsuarioController {
        // return estadoDAOImplementation.EstadoByPais(IdPais);
        // return estadoJPADAOImplementation.EstadoByPais(IdPais);
        ResponseEntity<Result<Estado>> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/estadoapi/" + IdPais,
+            "http://localhost:8080/estadoapi/repository/" + IdPais,
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result<Estado>>() {}
@@ -679,7 +705,7 @@ public class UsuarioController {
      //   return municipioDAOImplementation.MunicipioByEstado(IdEstado);
      //   return municipioJPADAOImplementation.MunicipioByEstado(IdEstado);
      ResponseEntity<Result<Municipio>> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/municipioapi/" + IdEstado,
+            "http://localhost:8080/municipioapi/repository/" + IdEstado,
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result<Municipio>>() {}
@@ -701,7 +727,7 @@ public class UsuarioController {
       RestTemplate restTemplate = new RestTemplate();
 
     ResponseEntity<Result<Colonia>> responseEntity = restTemplate.exchange(
-            "http://localhost:8080/coloniaapi/" + IdMunicipio,
+            "http://localhost:8080/coloniaapi/repository/" + IdMunicipio,
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Result<Colonia>>() {}
@@ -756,6 +782,12 @@ if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
                     model.addAttribute("archivoCorrecto", true);
                     model.addAttribute("object", result.object);
                     model.addAttribute("listaErrores", new ArrayList<>()); // vacía, todo ok
+                    
+                    if(result.object != null && result.object instanceof Map) {
+                        String sha1Hex = ((Map<String, String>) result.object).get("sha1Hex");
+                        session.setAttribute("sha1Hex", sha1Hex);
+                    }
+
                   
                 } else {
                     model.addAttribute("archivoCorrecto", false);

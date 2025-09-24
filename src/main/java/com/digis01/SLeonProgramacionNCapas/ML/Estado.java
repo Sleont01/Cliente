@@ -3,7 +3,7 @@ package com.digis01.SLeonProgramacionNCapas.ML;
 public class Estado {
     private int IdEstado;
     private String Nombre;
-    public Pais Pais;
+    public Pais pais;
     
     
     public Estado(){
@@ -14,7 +14,7 @@ public class Estado {
     public Estado(int IdEstado, String Nombre, Pais Pais) {
         this.IdEstado = IdEstado;
         this.Nombre = Nombre;
-        this.Pais = Pais;
+        this.pais = Pais;
     }
     
     

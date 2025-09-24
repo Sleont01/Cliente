@@ -965,7 +965,7 @@
                 $("#paisddl").change(function(){
                     $.ajax({
                             type: "GET",
-                            url: "/usuario/getEstadosByPais/" + $("#paisddl").val(),
+                            url: "estadoapi/repository/" + $("#paisddl").val(),
                             dataType: "json",
                             success: function (data, textStatus, jqXHR) {
                                 if (data.correct) {
@@ -985,7 +985,7 @@
                 $("#estadoddl").change(function(){
                 $.ajax({
                             type: "GET",
-                            url: "/usuario/getMunicipiosByEstado/" + $("#estadoddl").val(),
+                            url: "/usuario/getMunicipiosByEstado/repository/" + $("#estadoddl").val(),
                             dataType: "json",
                             success: function (data, textStatus, jqXHR) {
                             if (data.correct) {

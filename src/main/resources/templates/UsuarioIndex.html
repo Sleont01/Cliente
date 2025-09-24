@@ -349,11 +349,12 @@
                                  class="text-muted">Sin contacto</div>
                         </td>
                         <td>
-<!--                div con una condicional if que evalue que si IdUsuario es > 0 y IdDireccion == null se esconda esta parte-->
                 <div th:each="direccion : ${usuario.Direcciones}" th:text="|${direccion.Calle} ${direccion.NumeroExterior} ${direccion.NumeroInterior}
-                     ${direccion.Colonia.Nombre}, ${direccion.Colonia.CodigoPostal} ${direccion.Colonia.Municipio.Nombre} ${direccion.Colonia.Municipio.Estado.Nombre}
-                     ${direccion.Colonia.Municipio.Estado.Pais.Nombre}|"></div>
+                     ${direccion.Colonia.Nombre}, ${direccion.Colonia.CodigoPostal} ${direccion.Colonia.municipio.Nombre} ${direccion.Colonia.municipio.estado.Nombre}
+                     ${direccion.Colonia.municipio.estado.pais.Nombre}|"></div>
                         </td>
+                        
+
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input switch-baja-logica" 
