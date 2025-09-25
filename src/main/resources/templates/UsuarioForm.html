@@ -494,7 +494,8 @@
 
                         <div class="col-md-3 mb-3">
                             <label for="paisddl" class="form-label fw-bold">Pai­s</label>
-                            <select id="paisddl" class="form-select" aria-label="Default select example" onchange="getEstadosByPais()">
+                            <select id="paisddl" class="form-select" aria-label="Default select example"> 
+<!--                                //onchange="getEstadosByPais()"-->
                                 <option value=0 selected>Seleccione un pai­s</option>
                                 <option th:each="pais : ${paises}" th:text="${pais.nombre}" th:value="${pais.IdPais}">One</option>
                             </select>
@@ -965,13 +966,13 @@
                 $("#paisddl").change(function(){
                     $.ajax({
                             type: "GET",
-                            url: "estadoapi/repository/" + $("#paisddl").val(),
+                            url: "http://localhost:8080/estadoapi/repository/" + $("#paisddl").val(),
                             dataType: "json",
                             success: function (data, textStatus, jqXHR) {
                                 if (data.correct) {
-                                    $("#estadoddl").empty(); // Limpia el select antes de agregar opciones nuevas
+                                    $("#estadoddl").empty(); // Limpia el select antes de agregar opciones nuevas //objects
                                     $("#estadoddl").append('<option value="0" selected>Selecciona un estado</option>');
-                                    $.each(data.objects, function (indice, estado) {
+                                    $.each(data.object, function (indice, estado) {
                                         $("#estadoddl").append('<option value="' + estado.idEstado + '">' + estado.nombre + '</option>');
                                     });
                                 }
@@ -985,13 +986,13 @@
                 $("#estadoddl").change(function(){
                 $.ajax({
                             type: "GET",
-                            url: "/usuario/getMunicipiosByEstado/repository/" + $("#estadoddl").val(),
+                            url: "http://localhost:8080/municipioapi/repository/" + $("#estadoddl").val(),
                             dataType: "json",
                             success: function (data, textStatus, jqXHR) {
                             if (data.correct) {
                             $("#municipioddl").empty(); // Limpia el select antes de agregar opciones nuevas
                             $("#municipioddl").append('<option value="0" selected>Selecciona un municipio</option>');
-                            $.each(data.objects, function (indice, municipio) {
+                            $.each(data.object, function (indice, municipio) {
                             $("#municipioddl").append('<option value="' + municipio.idMunicipio + '">' + municipio.nombre + '</option>');
                 });
             }
@@ -1085,13 +1086,13 @@
                 $("#municipioddl").change(function (){
                 $.ajax({
                 type:"GET",
-                url:"/usuario/getColoniasByMunicipio/" + $("#municipioddl").val(),
+                url:"http://localhost:8080/coloniaapi/repository/" + $("#municipioddl").val(),
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
                 if(data.correct) {
                 $("#coloniaddl").empty();
                 $("#coloniaddl").append("<option value=0 selected>Selecciona un municipio</option>")
-                $.each(data.objects, function (indice, colonia){
+                $.each(data.object, function (indice, colonia){
                 $("#coloniaddl").append("<option value=" + colonia.idColonia + ">"+ colonia.nombre+"</option>") 
                 });
                 } else {
@@ -1109,8 +1110,8 @@
 
                 // Cuando se cargan colonias, guardarlas en un arreglo
                 $(document).ajaxSuccess(function (event, xhr, settings) {
-                if (settings.url.includes("/usuario/getColoniasByMunicipio/")) {
-                coloniasCargadas = xhr.responseJSON.objects; // Almacena las colonias
+                if (settings.url.includes("/coloniaapi/repository/")) {
+                coloniasCargadas = xhr.responseJSON.object; // Almacena las colonias
                 }
                 });
 
